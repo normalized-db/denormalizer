@@ -1,0 +1,7 @@
+.idea/
+!.idea/codeStyleSettings.xml
+
+node_modules/
+npm-debug.log
+
+lib/

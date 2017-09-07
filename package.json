@@ -1,0 +1,55 @@
+{
+  "name": "@normalized-db/denormalizer",
+  "version": "1.0.0",
+  "author": "Sandro Schmid <saseb.schmid@gmail.com>",
+  "license": "MIT",
+  "description": "Denormalize `JavaScript` objects from a normalized data structure based on a simple schema (implemented with `TypeScript`).",
+  "keywords": [
+    "TypeScript",
+    "JavaScript",
+    "Normalization",
+    "Normalizer",
+    "Denormalizer",
+    "Reverse references",
+    "IndexedDB",
+    "ObjectDB",
+    "NoSQL"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/normalized-db/denormalizer.git"
+  },
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "lint": "tslint --force ./src/*.ts ./src/**/*.ts",
+    "lint-fix": "tslint --force --fix ./src/*.ts ./src/**/*.ts",
+    "build": "WEBPACK_ENV=dev webpack",
+    "build-prod": "tslint ./src/*.ts ./src/**/*.ts && WEBPACK_ENV=prod webpack",
+    "build-all": "npm run build && npm run build-prod",
+    "clean-build": "rm -rf lib/ && npm run build-all",
+    "test": "npm run build && ./node_modules/karma/bin/karma start ./karma.conf.js"
+  },
+  "dependencies": {
+    "@normalized-db/core": "1.0.1"
+  },
+  "devDependencies": {
+    "@types/chai": "4.0.2",
+    "@types/mocha": "2.2.41",
+    "chai": "4.1.0",
+    "karma": "1.7.0",
+    "karma-chai": "0.1.0",
+    "karma-chrome-launcher": "2.2.0",
+    "karma-mocha": "1.3.0",
+    "karma-mocha-reporter": "2.2.3",
+    "karma-sourcemap-loader": "0.3.7",
+    "karma-webpack": "2.0.4",
+    "mocha": "3.5.0",
+    "path": "0.12.7",
+    "ts-loader": "2.3.2",
+    "ts-node": "3.3.0",
+    "tslint": "5.6.0",
+    "typescript": "2.4.2",
+    "webpack": "3.5.3"
+  }
+}
