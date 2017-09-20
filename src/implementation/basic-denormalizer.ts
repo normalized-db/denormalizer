@@ -1,5 +1,7 @@
 import {
   deepClone,
+  Depth,
+  FetchCallback,
   ISchema,
   isNull,
   isObject,
@@ -10,8 +12,6 @@ import {
   ValidKey
 } from '@normalized-db/core';
 import { IDenormalizer } from '../denormalizer-interface';
-import { Depth } from '../model/depth';
-import { FetchCallback } from '../model/fetch-callback';
 
 export class BasicDenormalizer implements IDenormalizer {
 

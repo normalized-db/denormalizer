@@ -1,5 +1,4 @@
-import { ValidKey } from '@normalized-db/core';
-import { Depth } from './model/depth';
+import { Depth, ValidKey } from '@normalized-db/core';
 
 export interface IDenormalizer {
   applyAll<T>(data: T[], type: string, depth?: number | Depth): Promise<T[]>;

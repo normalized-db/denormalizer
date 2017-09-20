@@ -1,6 +1,6 @@
-import { deepClone, ISchemaConfig } from '@normalized-db/core';
+import { deepClone, Depth, ISchemaConfig } from '@normalized-db/core';
 import { assert } from 'chai';
-import { Denormalizer, DenormalizerBuilder, Depth } from '../lib/index';
+import { Denormalizer, DenormalizerBuilder } from '../lib/index';
 import * as Blog from './data/blog-post';
 import * as User from './data/user';
 import { assertDoesNotThrowAsync, assertThrowsAsync } from './utilities/async-throws';

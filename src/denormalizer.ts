@@ -1,9 +1,7 @@
-import { ISchema, isNull, KeyMap, NormalizedData, ValidKey } from '@normalized-db/core';
+import { Depth, FetchCallback, ISchema, isNull, KeyMap, NormalizedData, ValidKey } from '@normalized-db/core';
 import { IDenormalizer } from './denormalizer-interface';
 import { BasicDenormalizer } from './implementation/basic-denormalizer';
 import { ReverseReferenceDenormalizer } from './implementation/reverse-reference-denormalizer';
-import { Depth } from './model/depth';
-import { FetchCallback } from './model/fetch-callback';
 
 export class Denormalizer implements IDenormalizer {
 

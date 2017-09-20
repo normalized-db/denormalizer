@@ -1,6 +1,5 @@
-import { ISchema, ISchemaConfig, KeyMap, NormalizedData, Schema } from '@normalized-db/core';
+import { FetchCallback, ISchema, ISchemaConfig, KeyMap, NormalizedData, Schema } from '@normalized-db/core';
 import { Denormalizer } from './denormalizer';
-import { FetchCallback } from './model/fetch-callback';
 
 export class DenormalizerBuilder {
 

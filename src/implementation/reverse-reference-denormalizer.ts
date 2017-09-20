@@ -1,4 +1,4 @@
-import { Depth } from '../model/depth';
+import { Depth } from '@normalized-db/core';
 import { BasicDenormalizer } from './basic-denormalizer';
 
 export class ReverseReferenceDenormalizer extends BasicDenormalizer {
