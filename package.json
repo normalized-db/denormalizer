@@ -1,6 +1,6 @@
 {
   "name": "@normalized-db/denormalizer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Sandro Schmid <saseb.schmid@gmail.com>",
   "license": "MIT",
   "description": "Denormalize `JavaScript` objects from a normalized data structure based on a simple schema (implemented with `TypeScript`).",
@@ -31,7 +31,7 @@
     "test": "npm run build && ./node_modules/karma/bin/karma start ./karma.conf.js"
   },
   "dependencies": {
-    "@normalized-db/core": "1.0.2"
+    "@normalized-db/core": "1.0.4"
   },
   "devDependencies": {
     "@types/chai": "4.0.2",
