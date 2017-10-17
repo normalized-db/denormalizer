@@ -101,7 +101,7 @@ export class BasicDenormalizer implements IDenormalizer {
 
   protected async denormalizeTargets(data: any, type: string, config: IStore, depth: number | Depth): Promise<void> {
     const promises = Object.keys(config.targets)
-      .filter(field => field in data)
+      .filter(field => field in data && !isNull(data[field]))
       .map(async field => {
         const { done, nextDepth } = this.validateDepth(depth, field);
         if (!done) {
@@ -126,8 +126,9 @@ export class BasicDenormalizer implements IDenormalizer {
     const targetType = target.type;
     const resultPromises = keys.map(async key => {
       const targetConfig = this.schema.getConfig(targetType);
-      if (isObject(key) && targetConfig.key in key) {
-        // target is already denormalized -> key is the final object
+      if (isNull(key) || (typeof key === 'object' && targetConfig.key in key)) {
+        // key is `null` or target is already denormalized
+        // -> key cannot be denormalized or already contains the final object
         return key;
       }
 
@@ -156,7 +157,6 @@ export class BasicDenormalizer implements IDenormalizer {
     });
 
     const result = await Promise.all(resultPromises);
-
     return isArray ? result : result[0];
   }
 
