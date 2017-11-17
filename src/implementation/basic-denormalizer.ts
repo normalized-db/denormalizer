@@ -116,9 +116,9 @@ export class BasicDenormalizer implements IDenormalizer {
                                     target: IStoreTargetItem,
                                     parent: string,
                                     depth: number | Depth): Promise<any> {
-    const isArray = Array.isArray(keys);
-    this.validateArrayType(target, parent, isArray);
+    this.validateArrayType(target, parent, keys);
 
+    const isArray = Array.isArray(keys);
     if (!isArray) {
       keys = [keys];
     }
@@ -188,12 +188,16 @@ export class BasicDenormalizer implements IDenormalizer {
     }
   }
 
-  protected validateArrayType(target: IStoreTargetItem, parent: string, isArray: boolean) {
+  protected validateArrayType(target: IStoreTargetItem, parent: string, data: any | any[]) {
+    if (isNull(data)) {
+      return;
+    }
+
     if (target.isArray) {
-      if (!isArray) {
+      if (!data) {
         throw new Error('\'' + parent + '\' is expected to have an array of \'' + target.type + '\' but got object');
       }
-    } else if (isArray) {
+    } else if (data) {
       throw new Error('\'' + parent + '\' is expected to have an object of \'' + target.type + '\' but got array');
     }
   }
