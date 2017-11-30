@@ -19,3 +19,24 @@ Install using NPM:
     `npm install --save @normalized-db/denormalizer`
 
 ---
+
+## Usage
+
+Use the `DenormalizerBuilder` to create a `Denormalizer`. Use either `schema(…)` or `schemaConfig(…)` to apply a 
+schema configuration. This is the only required parameter. If `normalizedData` does not contain an object which is
+needed during denormalization then the `Denormalizer` will try to lazy load it using `fetchCallback`. The `KeyMap`
+is a helper with a mapping from primary keys to the index of the related object in the normalized data.
+
+To actually denormalize an object or an array of objects use either…
+
+ - `applyAll(…): Promise<T[]>` for objects of a given type
+ - `applyAllKeys(…): Promise<T[]>` for objects with keys of a given type
+ - `apply(…)` for single objects of a given type
+ - `applyKey(…)` for single objects by a key of a given type
+ 
+The `type`-argument defines the data-store in which the item should be contained. Using a `depth` you can define
+how far the denormalization should be applied. A number means that all targets should be denormalized to the n-th level.
+`null` means that the field should be denormalized as far as possible. Note that circular dependencies currently will
+not be detected. If you need different levels for various fields then use a `Depth`-object like 
+e.g. `{ foo: 3, bar: { x: 1, y: null }`. This would denormalize up to 3 levels on obj.foo, 1 level on obj.bar.x and
+everything on obj.bar.y.

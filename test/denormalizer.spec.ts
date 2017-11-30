@@ -34,9 +34,9 @@ describe('Denormalizer', async function () {
     beforeEach(async function () {
       schemaConfig = User.SCHEMA;
       denormalizer = new DenormalizerBuilder()
-        .withSchemaConfig(schemaConfig)
-        .withNormalizedData({ 'user': [] })
-        .build;
+        .schemaConfig(schemaConfig)
+        .normalizedData({ 'user': [] })
+        .build();
     });
 
     it('Apply all', async function () {
@@ -62,9 +62,9 @@ describe('Denormalizer', async function () {
       normalizedData = deepClone(User.DATA_NORMALIZED);
       expected = deepClone(User.DATA);
       denormalizer = new DenormalizerBuilder()
-        .withSchemaConfig(schemaConfig)
-        .withNormalizedData(normalizedData)
-        .build;
+        .schemaConfig(schemaConfig)
+        .normalizedData(normalizedData)
+        .build();
     });
 
     it('Single Item', async function () {
@@ -93,10 +93,10 @@ describe('Denormalizer', async function () {
     it('Reverse references', async function () {
       normalizedData = deepClone(User.DATA_NORMALIZED_RR);
       denormalizer = new DenormalizerBuilder()
-        .withSchemaConfig(schemaConfig)
-        .withNormalizedData(normalizedData)
-        .withReverseRefsDeleted(true)
-        .build;
+        .schemaConfig(schemaConfig)
+        .normalizedData(normalizedData)
+        .reverseRefsDeleted(true)
+        .build();
       data = normalizedData.user;
       await test('user');
     });
@@ -104,9 +104,9 @@ describe('Denormalizer', async function () {
     it('Reverse references - Keep', async function () {
       normalizedData = deepClone(User.DATA_NORMALIZED_RR);
       denormalizer = new DenormalizerBuilder()
-        .withSchemaConfig(schemaConfig)
-        .withNormalizedData(normalizedData)
-        .build;
+        .schemaConfig(schemaConfig)
+        .normalizedData(normalizedData)
+        .build();
 
       data = normalizedData.user;
 
@@ -125,9 +125,9 @@ describe('Denormalizer', async function () {
       normalizedData = deepClone(Blog.DATA_NORMALIZED);
       expected = deepClone(Blog.DATA);
       denormalizer = new DenormalizerBuilder()
-        .withSchemaConfig(schemaConfig)
-        .withNormalizedData(normalizedData)
-        .build;
+        .schemaConfig(schemaConfig)
+        .normalizedData(normalizedData)
+        .build();
     });
 
     it('Single Item', async function () {
@@ -237,10 +237,10 @@ describe('Denormalizer', async function () {
     it('Reverse references', async function () {
       normalizedData = deepClone(Blog.DATA_NORMALIZED_RR);
       denormalizer = new DenormalizerBuilder()
-        .withSchemaConfig(schemaConfig)
-        .withNormalizedData(normalizedData)
-        .withReverseRefsDeleted(true)
-        .build;
+        .schemaConfig(schemaConfig)
+        .normalizedData(normalizedData)
+        .reverseRefsDeleted(true)
+        .build();
       data = normalizedData.article;
       await test('article');
     });
