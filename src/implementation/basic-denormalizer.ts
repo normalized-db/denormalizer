@@ -18,21 +18,25 @@ import { IDenormalizer } from '../denormalizer-interface';
 
 export class BasicDenormalizer implements IDenormalizer {
 
-  constructor(private schema: ISchema,
-              private normalizedData: NormalizedData,
-              private keys?: KeyMap,
-              private fetchCallback?: FetchCallback) {
-    if (isNull(this.keys)) {
-      this.keys = {};
-      this.schema.getTypes().forEach(type => {
-        if (type in this.normalizedData) {
-          const config = this.schema.getConfig(type);
-          this.keys[type] = new Map<any, number>(this.normalizedData[type].map<[any, number]>((item, index) => [
+  constructor(private _schema: ISchema,
+              private _normalizedData?: NormalizedData,
+              private _keys?: KeyMap,
+              private _fetchCallback?: FetchCallback) {
+    if (isNull(this._normalizedData)) {
+      this._normalizedData = {};
+    }
+
+    if (isNull(this._keys)) {
+      this._keys = {};
+      this._schema.getTypes().forEach(type => {
+        if (type in this._normalizedData) {
+          const config = this._schema.getConfig(type);
+          this._keys[type] = new Map<any, number>(this._normalizedData[type].map<[any, number]>((item, index) => [
             item[config.key],
             index
           ]));
         } else {
-          this.keys[type] = new Map<any, number>();
+          this._keys[type] = new Map<any, number>();
         }
       });
     }
@@ -61,16 +65,16 @@ export class BasicDenormalizer implements IDenormalizer {
   public async applyKey<Key extends ValidKey, T>(type: string, key: Key, depth?: number | Depth): Promise<T> {
     this.validateType(type);
 
-    if (!this.keys[type].has(key)) {
-      if (this.fetchCallback) {
-        const fetchedData = await this.fetchCallback(type, key);
+    if (!this._keys[type].has(key)) {
+      if (this._fetchCallback) {
+        const fetchedData = await this._fetchCallback(type, key);
         if (fetchedData) {
-          if (type in this.normalizedData) {
-            this.keys[type].set(key, this.normalizedData[type].length);
-            this.normalizedData[type].push(fetchedData);
+          if (type in this._normalizedData) {
+            this._keys[type].set(key, this._normalizedData[type].length);
+            this._normalizedData[type].push(fetchedData);
           } else {
-            this.keys[type].set(key, 0);
-            this.normalizedData[type] = [fetchedData];
+            this._keys[type].set(key, 0);
+            this._normalizedData[type] = [fetchedData];
           }
 
           return await this.apply(type, deepClone(fetchedData), depth);
@@ -83,7 +87,7 @@ export class BasicDenormalizer implements IDenormalizer {
       }
     }
 
-    const data = this.normalizedData[type][this.keys[type].get(key)];
+    const data = this._normalizedData[type][this._keys[type].get(key)];
     return await this.apply(type, deepClone(data), depth);
   }
 
@@ -93,7 +97,7 @@ export class BasicDenormalizer implements IDenormalizer {
   }
 
   protected async denormalizeObject(type: string, data: any, depth: number | Depth): Promise<any> {
-    const config = this.schema.getConfig(type);
+    const config = this._schema.getConfig(type);
     if (!isNull(config.targets)) {
       await this.denormalizeTargets(type, data, config, depth);
     }
@@ -128,23 +132,23 @@ export class BasicDenormalizer implements IDenormalizer {
 
     const targetType = target.type;
     const resultPromises = keys.map(async key => {
-      const targetConfig = this.schema.getConfig(targetType);
+      const targetConfig = this._schema.getConfig(targetType);
       if (isNull(key) || (typeof key === 'object' && targetConfig.key in key)) {
         // key is `null` or target is already denormalized
         // -> key cannot be denormalized or already contains the final object
         return key;
       }
 
-      const typeKeys = this.keys[targetType];
-      if (!typeKeys.has(key) && this.fetchCallback) {
-        const data = await this.fetchCallback(key, targetType);
+      const typeKeys = this._keys[targetType];
+      if (!typeKeys.has(key) && this._fetchCallback) {
+        const data = await this._fetchCallback(key, targetType);
         if (data) {
-          if (targetType in this.normalizedData) {
-            typeKeys.set(key, this.normalizedData[targetType].length);
-            this.normalizedData[targetType].push(data);
+          if (targetType in this._normalizedData) {
+            typeKeys.set(key, this._normalizedData[targetType].length);
+            this._normalizedData[targetType].push(data);
           } else {
             typeKeys.set(key, 0);
-            this.normalizedData[targetType] = [data];
+            this._normalizedData[targetType] = [data];
           }
 
           return await this.apply(targetType, deepClone(data), depth);
@@ -152,7 +156,7 @@ export class BasicDenormalizer implements IDenormalizer {
       }
 
       if (typeKeys.has(key)) {
-        const targetObject = this.normalizedData[targetType][typeKeys.get(key)];
+        const targetObject = this._normalizedData[targetType][typeKeys.get(key)];
         return await this.applyTarget(targetType, deepClone(targetObject), depth);
       }
 
@@ -206,7 +210,7 @@ export class BasicDenormalizer implements IDenormalizer {
   }
 
   protected validateType(type: string) {
-    if (!this.schema.hasType(type)) {
+    if (!this._schema.hasType(type)) {
       throw new InvalidTypeError(type);
     }
   }
