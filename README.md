@@ -31,8 +31,8 @@ To actually denormalize an object or an array of objects use either…
 
  - `applyAll(…): Promise<T[]>` for objects of a given type
  - `applyAllKeys(…): Promise<T[]>` for objects with keys of a given type
- - `apply(…)` for single objects of a given type
- - `applyKey(…)` for single objects by a key of a given type
+ - `apply(…): Promise<T>` for single objects of a given type
+ - `applyKey(…): Promise<T>` for single objects by a key of a given type
  
 The `type`-argument defines the data-store in which the item should be contained. Using a `depth` you can define
 how far the denormalization should be applied. A number means that all targets should be denormalized to the n-th level.
