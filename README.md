@@ -4,7 +4,7 @@ Denormalize `JavaScript` objects from a normalized data structure based on a sim
 (implemented with `TypeScript`).
 
  - **Author**: Sandro Schmid ([saseb.schmid@gmail.com](<mailto:saseb.schmid@gmail.com>))
- - **Version**: 1.0.3
+ - **Version**: 2.0.0
 
 ---
 
@@ -14,7 +14,7 @@ Denormalize `JavaScript` objects from a normalized data structure based on a sim
 
 ## Installation
 
-Install using NPM: 
+Install using NPM:
 
     `npm install --save @normalized-db/denormalizer`
 
