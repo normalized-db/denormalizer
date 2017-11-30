@@ -23,20 +23,20 @@ export class Denormalizer implements IDenormalizer {
     this.implementation = this.buildDenormalizer();
   }
 
-  public applyAll<T>(data: T[], type: string, depth?: number | Depth): Promise<T[]> {
-    return this.implementation.applyAll<T>(data, type, depth);
+  public applyAll<T>(type: string, data: T[], depth?: number | Depth): Promise<T[]> {
+    return this.implementation.applyAll<T>(type, data, depth);
   }
 
-  public applyAllKeys<Key extends ValidKey, T>(keys: Key[], type: string, depth?: number | Depth): Promise<T[]> {
-    return this.implementation.applyAllKeys<Key, T>(keys, type, depth);
+  public applyAllKeys<Key extends ValidKey, T>(type: string, keys: Key[], depth?: number | Depth): Promise<T[]> {
+    return this.implementation.applyAllKeys<Key, T>(type, keys, depth);
   }
 
-  public apply<T>(data: T, type: string, depth?: number | Depth): Promise<T> {
-    return this.implementation.apply<T>(data, type, depth);
+  public apply<T>(type: string, data: T, depth?: number | Depth): Promise<T> {
+    return this.implementation.apply<T>(type, data, depth);
   }
 
-  public applyKey<Key extends ValidKey, T>(key: Key, type: string, depth?: number | Depth): Promise<T> {
-    return this.implementation.applyKey<Key, T>(key, type, depth);
+  public applyKey<Key extends ValidKey, T>(type: string, key: Key, depth?: number | Depth): Promise<T> {
+    return this.implementation.applyKey<Key, T>(type, key, depth);
   }
 
   protected buildDenormalizer(): IDenormalizer {
