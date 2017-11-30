@@ -2,6 +2,7 @@ import {
   deepClone,
   Depth,
   FetchCallback,
+  InvalidTypeError,
   ISchema,
   isNull,
   isObject,
@@ -9,6 +10,8 @@ import {
   IStoreTargetItem,
   KeyMap,
   NormalizedData,
+  NotFoundError,
+  TypeMismatchError,
   ValidKey
 } from '@normalized-db/core';
 import { IDenormalizer } from '../denormalizer-interface';
@@ -24,39 +27,38 @@ export class BasicDenormalizer implements IDenormalizer {
       this.schema.getTypes().forEach(type => {
         if (type in this.normalizedData) {
           const config = this.schema.getConfig(type);
-          this.keys[type] = new Map(this.normalizedData[type].map<[any, number]>(
-            (item, index) => [item[config.key], index])
-          );
+          this.keys[type] = new Map<any, number>(this.normalizedData[type].map<[any, number]>((item, index) => [
+            item[config.key],
+            index
+          ]));
         } else {
-          this.keys[type] = new Map();
+          this.keys[type] = new Map<any, number>();
         }
       });
     }
   }
 
-  public async applyAll<T>(data: T[], type: string, depth?: number | Depth): Promise<T[]> {
+  public async applyAll<T>(type: string, data: T[], depth?: number | Depth): Promise<T[]> {
     this.validateType(type);
-
-    return await this.denormalizeArray(data, type, depth);
+    return await this.denormalizeArray(type, data, depth);
   }
 
-  public async applyAllKeys<Key extends ValidKey, T>(keys: Key[], type: string, depth?: number | Depth): Promise<T[]> {
+  public async applyAllKeys<Key extends ValidKey, T>(type: string, keys: Key[], depth?: number | Depth): Promise<T[]> {
     this.validateType(type);
-
-    return await Promise.all(keys.map(async key => await this.applyKey<Key, T>(key, type, depth)));
+    return await Promise.all(keys.map(async key => await this.applyKey<Key, T>(type, key, depth)));
   }
 
-  public async apply<T>(data: T, type: string, depth?: number | Depth): Promise<T> {
+  public async apply<T>(type: string, data: T, depth?: number | Depth): Promise<T> {
     this.validateType(type);
 
     if (isObject(data)) {
-      return await this.denormalizeObject(data, type, depth);
+      return await this.denormalizeObject(type, data, depth);
     } else {
       return data;
     }
   }
 
-  public async applyKey<Key extends ValidKey, T>(key: Key, type: string, depth?: number | Depth): Promise<T> {
+  public async applyKey<Key extends ValidKey, T>(type: string, key: Key, depth?: number | Depth): Promise<T> {
     this.validateType(type);
 
     if (!this.keys[type].has(key)) {
@@ -71,7 +73,7 @@ export class BasicDenormalizer implements IDenormalizer {
             this.normalizedData[type] = [fetchedData];
           }
 
-          return await this.apply(deepClone(fetchedData), type, depth);
+          return await this.apply(type, deepClone(fetchedData), depth);
         } else {
           this.notFound(type, key);
         }
@@ -82,30 +84,30 @@ export class BasicDenormalizer implements IDenormalizer {
     }
 
     const data = this.normalizedData[type][this.keys[type].get(key)];
-    return await this.apply(deepClone(data), type, depth);
+    return await this.apply(type, deepClone(data), depth);
   }
 
-  protected async denormalizeArray(data: any[], type: string, depth: number | Depth): Promise<any> {
+  protected async denormalizeArray(type: string, data: any[], depth: number | Depth): Promise<any> {
     // TODO: check for arrays, empty objects
-    return await Promise.all(data.map(item => this.denormalizeObject(item, type, depth)));
+    return await Promise.all(data.map(item => this.denormalizeObject(type, item, depth)));
   }
 
-  protected async denormalizeObject(data: any, type: string, depth: number | Depth): Promise<any> {
+  protected async denormalizeObject(type: string, data: any, depth: number | Depth): Promise<any> {
     const config = this.schema.getConfig(type);
     if (!isNull(config.targets)) {
-      await this.denormalizeTargets(data, type, config, depth);
+      await this.denormalizeTargets(type, data, config, depth);
     }
 
     return data;
   }
 
-  protected async denormalizeTargets(data: any, type: string, config: IStore, depth: number | Depth): Promise<void> {
+  protected async denormalizeTargets(type: string, data: any, config: IStore, depth: number | Depth): Promise<void> {
     const promises = Object.keys(config.targets)
       .filter(field => field in data && !isNull(data[field]))
       .map(async field => {
         const { done, nextDepth } = this.validateDepth(depth, field);
         if (!done) {
-          data[field] = await this.denormalizeTarget(data[field], config.targets[field], type, nextDepth);
+          data[field] = await this.denormalizeTarget(data[field], config.targets[field], type, field, nextDepth);
         }
       });
 
@@ -115,8 +117,9 @@ export class BasicDenormalizer implements IDenormalizer {
   protected async denormalizeTarget(keys: any | any[],
                                     target: IStoreTargetItem,
                                     parent: string,
+                                    parentField: string,
                                     depth: number | Depth): Promise<any> {
-    this.validateArrayType(target, parent, keys);
+    this.validateArrayType(target, parent, parentField, keys);
 
     const isArray = Array.isArray(keys);
     if (!isArray) {
@@ -144,13 +147,13 @@ export class BasicDenormalizer implements IDenormalizer {
             this.normalizedData[targetType] = [data];
           }
 
-          return await this.apply(deepClone(data), targetType, depth);
+          return await this.apply(targetType, deepClone(data), depth);
         }
       }
 
       if (typeKeys.has(key)) {
         const targetObject = this.normalizedData[targetType][typeKeys.get(key)];
-        return await this.applyTarget(deepClone(targetObject), targetType, depth);
+        return await this.applyTarget(targetType, deepClone(targetObject), depth);
       }
 
       return key; // target not found -> return key only
@@ -160,8 +163,8 @@ export class BasicDenormalizer implements IDenormalizer {
     return isArray ? result : result[0];
   }
 
-  protected applyTarget(data: any, type: string, depth?: number | Depth): Promise<any> {
-    return this.apply(data, type, depth);
+  protected applyTarget(type: string, data: any, depth?: number | Depth): Promise<any> {
+    return this.apply(type, data, depth);
   }
 
   protected validateDepth(depth: number | Depth, field: string): { done: boolean, nextDepth: number | Depth } {
@@ -188,27 +191,27 @@ export class BasicDenormalizer implements IDenormalizer {
     }
   }
 
-  protected validateArrayType(target: IStoreTargetItem, parent: string, data: any | any[]) {
+  protected validateArrayType(target: IStoreTargetItem, parent: string, parentField: string, data: any | any[]) {
     if (isNull(data)) {
       return;
     }
 
     if (target.isArray) {
-      if (!data) {
-        throw new Error('\'' + parent + '\' is expected to have an array of \'' + target.type + '\' but got object');
+      if (!Array.isArray(data)) {
+        throw new TypeMismatchError(parent, parentField, true);
       }
-    } else if (data) {
-      throw new Error('\'' + parent + '\' is expected to have an object of \'' + target.type + '\' but got array');
+    } else if (Array.isArray(data)) {
+      throw new TypeMismatchError(parent, parentField, false);
     }
   }
 
   protected validateType(type: string) {
     if (!this.schema.hasType(type)) {
-      throw new Error('Type \'' + type + '\' is not defined');
+      throw new InvalidTypeError(type);
     }
   }
 
   protected notFound(type: string, key: ValidKey) {
-    throw new Error('Could not find \'' + type + '\' with key \'' + String(key) + '\'');
+    throw new NotFoundError(type, key);
   }
 }

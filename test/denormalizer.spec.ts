@@ -1,6 +1,6 @@
 import { deepClone, Depth, ISchemaConfig } from '@normalized-db/core';
 import { assert } from 'chai';
-import { Denormalizer, DenormalizerBuilder } from '../lib/index';
+import { Denormalizer, DenormalizerBuilder } from '../src/index';
 import * as Blog from './data/blog-post';
 import * as User from './data/user';
 import { assertDoesNotThrowAsync, assertThrowsAsync } from './utilities/async-throws';
@@ -15,8 +15,8 @@ describe('Denormalizer', async function () {
 
   async function test(rootEntity: string, depth?: number | Depth): Promise<void> {
     const result = Array.isArray(data)
-      ? await denormalizer.applyAll(data, rootEntity, depth)
-      : await denormalizer.apply(data, rootEntity, depth);
+      ? await denormalizer.applyAll(rootEntity, data, depth)
+      : await denormalizer.apply(rootEntity, data, depth);
 
     assert.deepEqual(result, expected);
   }
@@ -40,18 +40,18 @@ describe('Denormalizer', async function () {
     });
 
     it('Apply all', async function () {
-      await assertDoesNotThrowAsync(() => denormalizer.applyAll([], 'user'), 'Type \'user\' is not defined');
-      await assertThrowsAsync(() => denormalizer.applyAll([], 'invalid'), 'Type \'invalid\' is not defined');
+      await assertDoesNotThrowAsync(() => denormalizer.applyAll('user', []), 'Type "user" is not configured');
+      await assertThrowsAsync(() => denormalizer.applyAll('invalid', []), 'Type "invalid" is not configured');
     });
 
     it('Apply', async function () {
-      await assertDoesNotThrowAsync(() => denormalizer.apply({}, 'user'), 'Type \'user\' is not defined');
-      await assertThrowsAsync(() => denormalizer.apply({}, 'invalid'), 'Type \'invalid\' is not defined');
+      await assertDoesNotThrowAsync(() => denormalizer.apply('user', {}), 'Type "user" is not configured');
+      await assertThrowsAsync(() => denormalizer.apply('invalid', {}), 'Type "invalid" is not configured');
     });
 
     it('Apply key', async function () {
-      await assertDoesNotThrowAsync(() => denormalizer.applyKey(0, 'user'), 'Type \'user\' is not defined');
-      await assertThrowsAsync(() => denormalizer.applyKey(0, 'invalid'), 'Type \'invalid\' is not defined');
+      await assertDoesNotThrowAsync(() => denormalizer.applyKey('user', 0), 'Type "user" is not configured');
+      await assertThrowsAsync(() => denormalizer.applyKey('invalid', 0), 'Type "invalid" is not configured');
     });
   });
 
@@ -75,9 +75,7 @@ describe('Denormalizer', async function () {
 
     it('Single Item - by Key', async function () {
       expected = expected[0];
-
-      const result = await denormalizer.applyKey(1, 'user');
-
+      const result = await denormalizer.applyKey('user', 1);
       assert.deepEqual(result, expected);
     });
 
@@ -250,21 +248,21 @@ describe('Denormalizer', async function () {
     describe('Invalid data', async function () {
 
       async function testError(error) {
-        await assertThrowsAsync(() => denormalizer.apply(data, 'article'), error);
+        await assertThrowsAsync(() => denormalizer.apply('article', data), error);
       }
 
       it('Expected array', async function () {
         data = deepClone(normalizedData.article[0]);
         data.comments = data.comments[0];
         expected = expected[0];
-        await testError('\'article\' is expected to have an array of \'comment\' but got object');
+        await testError('"article.comments" is expected to be an array but got object.');
       });
 
       it('Expected object', async function () {
         data = deepClone(normalizedData.article[0]);
         data.author = [data.author];
         expected = expected[0];
-        await testError('\'article\' is expected to have an object of \'user\' but got array');
+        await testError('"article.author" is expected to be an object but got array.');
       });
     });
   });
