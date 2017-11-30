@@ -3,14 +3,19 @@
 Denormalize `JavaScript` objects from a normalized data structure based on a simple schema 
 (implemented with `TypeScript`).
 
-**Author**: Sandro Schmid <saseb.schmid@gmail.com>
+ - **Author**: Sandro Schmid ([saseb.schmid@gmail.com](<mailto:saseb.schmid@gmail.com>))
+ - **Version**: 1.0.3
 
 ---
 
-**Note**: This library is under active development and not completely ready yet.
+**Note**: This library is under active development.
 
 ---
 
 ## Installation
 
- - `npm install --save @normalized-db/denormalizer`
+Install using NPM: 
+
+    `npm install --save @normalized-db/denormalizer`
+
+---

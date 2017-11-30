@@ -61,7 +61,7 @@ export class BasicDenormalizer implements IDenormalizer {
 
     if (!this.keys[type].has(key)) {
       if (this.fetchCallback) {
-        const fetchedData = await this.fetchCallback(key, type);
+        const fetchedData = await this.fetchCallback(type, key);
         if (fetchedData) {
           if (type in this.normalizedData) {
             this.keys[type].set(key, this.normalizedData[type].length);
