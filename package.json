@@ -1,6 +1,6 @@
 {
   "name": "@normalized-db/denormalizer",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "Sandro Schmid <saseb.schmid@gmail.com>",
   "license": "MIT",
   "description": "Denormalize `JavaScript` objects from a normalized data structure based on a simple schema (implemented with `TypeScript`).",
