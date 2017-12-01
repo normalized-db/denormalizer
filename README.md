@@ -40,3 +40,9 @@ how far the denormalization should be applied. A number means that all targets s
 not be detected. If you need different levels for various fields then use a `Depth`-object like 
 e.g. `{ foo: 3, bar: { x: 1, y: null }`. This would denormalize up to 3 levels on obj.foo, 1 level on obj.bar.x and
 everything on obj.bar.y.
+
+## Examples
+
+See the [examples-project](https://github.com/normalized-db/examples) for detailed examples:
+
+ - [Angular4-App](https://github.com/normalized-db/examples)
