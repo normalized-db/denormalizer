@@ -16,9 +16,7 @@ Denormalize `JavaScript` objects from a normalized data structure based on a sim
 
 Install using NPM:
 
-    `npm install --save @normalized-db/denormalizer`
-
----
+    npm install --save @normalized-db/denormalizer
 
 ## Usage
 
