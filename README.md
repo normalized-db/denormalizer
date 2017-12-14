@@ -9,7 +9,7 @@ Denormalize `JavaScript` objects from a normalized data structure based on a sim
 ## Notes
 
  - This library is under active development.
- - To ease versioning equal version numbers are used for all modules.
+ - To ease versioning equal major and minor version numbers are used for all modules.
 
 ## Installation
 
