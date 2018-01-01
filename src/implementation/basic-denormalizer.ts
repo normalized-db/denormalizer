@@ -1,18 +1,6 @@
 import {
-  deepClone,
-  Depth,
-  FetchCallback,
-  InvalidTypeError,
-  ISchema,
-  isNull,
-  isObject,
-  IStore,
-  IStoreTargetItem,
-  KeyMap,
-  NormalizedData,
-  NotFoundError,
-  TypeMismatchError,
-  ValidKey
+  deepClone, Depth, FetchCallback, InvalidTypeError, ISchema, isNull, isObject, IStore, IStoreTargetItem, KeyMap,
+  NdbDocument, NormalizedData, NotFoundError, TypeMismatchError, ValidKey
 } from '@normalized-db/core';
 import { IDenormalizer } from '../denormalizer-interface';
 
@@ -42,17 +30,19 @@ export class BasicDenormalizer implements IDenormalizer {
     }
   }
 
-  public async applyAll<T>(type: string, data: T[], depth?: number | Depth): Promise<T[]> {
+  public async applyAll<T extends NdbDocument>(type: string, data: T[], depth?: number | Depth): Promise<T[]> {
     this.validateType(type);
     return await this.denormalizeArray(type, data, depth);
   }
 
-  public async applyAllKeys<Key extends ValidKey, T>(type: string, keys: Key[], depth?: number | Depth): Promise<T[]> {
+  public async applyAllKeys<Key extends ValidKey, T extends NdbDocument>(type: string,
+                                                                         keys: Key[],
+                                                                         depth?: number | Depth): Promise<T[]> {
     this.validateType(type);
     return await Promise.all(keys.map(async key => await this.applyKey<Key, T>(type, key, depth)));
   }
 
-  public async apply<T>(type: string, data: T, depth?: number | Depth): Promise<T> {
+  public async apply<T extends NdbDocument>(type: string, data: T, depth?: number | Depth): Promise<T> {
     this.validateType(type);
 
     if (isObject(data)) {
@@ -62,7 +52,9 @@ export class BasicDenormalizer implements IDenormalizer {
     }
   }
 
-  public async applyKey<Key extends ValidKey, T>(type: string, key: Key, depth?: number | Depth): Promise<T> {
+  public async applyKey<Key extends ValidKey, T extends NdbDocument>(type: string,
+                                                                     key: Key,
+                                                                     depth?: number | Depth): Promise<T> {
     this.validateType(type);
 
     if (!this._keys[type].has(key)) {
@@ -91,12 +83,12 @@ export class BasicDenormalizer implements IDenormalizer {
     return await this.apply(type, deepClone(data), depth);
   }
 
-  protected async denormalizeArray(type: string, data: any[], depth: number | Depth): Promise<any> {
+  protected async denormalizeArray(type: string, data: NdbDocument[], depth: number | Depth): Promise<any> {
     // TODO: check for arrays, empty objects
     return await Promise.all(data.map(item => this.denormalizeObject(type, item, depth)));
   }
 
-  protected async denormalizeObject(type: string, data: any, depth: number | Depth): Promise<any> {
+  protected async denormalizeObject(type: string, data: NdbDocument, depth: number | Depth): Promise<any> {
     const config = this._schema.getConfig(type);
     if (!isNull(config.targets)) {
       await this.denormalizeTargets(type, data, config, depth);
@@ -105,7 +97,10 @@ export class BasicDenormalizer implements IDenormalizer {
     return data;
   }
 
-  protected async denormalizeTargets(type: string, data: any, config: IStore, depth: number | Depth): Promise<void> {
+  protected async denormalizeTargets(type: string,
+                                     data: NdbDocument,
+                                     config: IStore,
+                                     depth: number | Depth): Promise<void> {
     const promises = Object.keys(config.targets)
       .filter(field => field in data && !isNull(data[field]))
       .map(async field => {
@@ -167,7 +162,7 @@ export class BasicDenormalizer implements IDenormalizer {
     return isArray ? result : result[0];
   }
 
-  protected applyTarget(type: string, data: any, depth?: number | Depth): Promise<any> {
+  protected applyTarget(type: string, data: NdbDocument, depth?: number | Depth): Promise<NdbDocument> {
     return this.apply(type, data, depth);
   }
 
