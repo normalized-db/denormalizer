@@ -1,6 +1,6 @@
 {
   "name": "@normalized-db/denormalizer",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "author": "Sandro Schmid <saseb.schmid@gmail.com>",
   "license": "MIT",
   "description": "Denormalize `JavaScript` objects from a normalized data structure based on a simple schema (implemented with `TypeScript`).",
@@ -32,7 +32,7 @@
     "build-and-publish": "npm run clean-build && npm publish"
   },
   "dependencies": {
-    "@normalized-db/core": "2.2.0"
+    "@normalized-db/core": "2.3.0"
   },
   "devDependencies": {
     "@types/chai": "4.0.2",
