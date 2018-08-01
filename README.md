@@ -4,12 +4,11 @@ Denormalize `JavaScript` objects from a normalized data structure based on a sim
 (implemented with `TypeScript`).
 
  - **Author**: Sandro Schmid ([saseb.schmid@gmail.com](<mailto:saseb.schmid@gmail.com>))
- - **Version**: 2.4.0
+ - **Version**: 2.5.0-beta.1
 
-## Notes
+## Versioning
 
- - This library is under active development.
- - To ease versioning equal major and minor version numbers are used for all modules.
+To ease versioning equal major and minor version numbers are used for all modules.
 
 ## Installation
 
