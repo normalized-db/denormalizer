@@ -1,5 +1,8 @@
 # @normalized-db/denormalizer
 
+> [!WARNING]  
+> This project has been deprecated in favor of [@normalized-db/ndb](https://github.com/normalized-db/ndb).
+
 Denormalize `JavaScript` objects from a normalized data structure based on a simple schema 
 (implemented with `TypeScript`).
 
